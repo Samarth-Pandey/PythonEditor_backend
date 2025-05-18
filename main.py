@@ -23,12 +23,11 @@ async def execute_code(request: Request):
     if not code:
         raise HTTPException(status_code=400, detail="No code provided")
     
-    # Count how many input() calls are in the code
+   
     input_count = code.count("input(")
     
-    # If we haven't received all inputs yet, return the next prompt
+    
     if len(inputs) < input_count:
-        # Find the next input prompt
         input_matches = re.finditer(r'input\(([^)]*)\)', code)
         next_prompt = None
         for i, match in enumerate(input_matches):
@@ -42,12 +41,12 @@ async def execute_code(request: Request):
             "received_inputs": inputs
         }
     
-    # Save code to temp file
+    
     with open("temp.py", "w") as f:
         f.write(code)
     
     try:
-        # Execute with all inputs provided
+       
         process = subprocess.Popen(
             ["python", "temp.py"],
             stdin=subprocess.PIPE,
@@ -56,10 +55,10 @@ async def execute_code(request: Request):
             text=True
         )
         
-        # Join inputs with newlines and add trailing newline
+       
         input_str = "\n".join(inputs) + "\n"
         
-        # Get output
+        
         stdout, stderr = process.communicate(input=input_str, timeout=10)
         
         output = stdout
